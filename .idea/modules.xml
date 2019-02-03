@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tiles.iml" filepath="$PROJECT_DIR$/.idea/modules/Tiles.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tiles_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Tiles_main.iml" group="Tiles" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tiles_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Tiles_test.iml" group="Tiles" />
+    </modules>
+  </component>
+</project>

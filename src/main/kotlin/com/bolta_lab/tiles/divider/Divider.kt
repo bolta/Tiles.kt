@@ -1,10 +1,11 @@
 package com.bolta_lab.tiles.divider
 
 import com.bolta_lab.js.JsExpr
+import com.bolta_lab.tiles.Figure
 import com.bolta_lab.tiles.Rect
 import java.util.function.Function
 
-typealias Divider = (Rect) -> Sequence<Rect>
+typealias Divider = (Figure) -> Sequence<Figure>
 
 //interface Divider {
 //

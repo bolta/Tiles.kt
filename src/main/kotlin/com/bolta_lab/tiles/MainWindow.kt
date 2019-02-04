@@ -12,14 +12,15 @@ class MainWindow(val rect: Rect, val divider: Divider, val colors: Sequence<Colo
 	}
 
 	override fun setup() {
-		val rects = this.divider(this.rect)
+		val figures = this.divider(this.rect)
 		this.rectMode(PConstants.CORNER)
 
 
 
-		rects.zip(this.colors).forEach { (rect, color) ->
-			this.fill(256 * color.red, 256 * color.green, 256 * color.blue)
-			this.rect(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat())
+		figures.zip(this.colors).forEach { (figure, color) ->
+			this.g.fill(256 * color.red, 256 * color.green, 256 * color.blue)
+			figure.paint(this.g)
+//			this.rect(figure.left.toFloat(), figure.top.toFloat(), figure.right.toFloat(), figure.bottom.toFloat())
 		}
 	}
 }

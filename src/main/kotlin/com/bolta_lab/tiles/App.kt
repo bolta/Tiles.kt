@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
 			},
 		})
 	""".trimIndent()))
-	val window = MainWindow(Rect(Vec2d(0, 0), settings.size), settings.divider, settings.colors)
+	val window = MainWindow(Rect(Vec2d(0.0, 0.0), settings.size), settings.divider, settings.colors)
 
 	PApplet.runSketch((listOf(window.javaClass.canonicalName) + args).toTypedArray(), window)
 }

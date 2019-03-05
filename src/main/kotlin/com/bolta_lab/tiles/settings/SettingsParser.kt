@@ -17,12 +17,12 @@ fun parseSettings(script: Reader): Settings {
 	val size = parseSize(settings.required<Bindings>("size"))
 
 	// TODO 仮
-	val divider = lrtb(Vec2d(16, 16))
+	val divider = lrtb(Vec2d(16.0, 16.0))
 	// TODO 仮
 	val colors = defaultColorGen(Random())
 
 	return Settings(size, divider, colors)
 }
 
-private fun parseSize(array: Bindings): Vec2d = Vec2d(array.required("0"), array.required("1"))
+private fun parseSize(array: Bindings): Vec2d = Vec2d(array.required<Number>("0").toDouble(), array.required<Number>("1").toDouble())
 

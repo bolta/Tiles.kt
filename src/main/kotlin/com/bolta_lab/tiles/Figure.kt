@@ -2,7 +2,7 @@ package com.bolta_lab.tiles
 
 import processing.core.PGraphics
 
-data class Vec2d(val x: Int, val y: Int)
+data class Vec2d(val x: Double, val y: Double)
 
 abstract class Figure {
 	/**
@@ -15,31 +15,42 @@ abstract class Figure {
 	 * この図形に外接する矩形を返す
 	 */
 	abstract val circumscribedRect: Rect
+
+	abstract val vertices: List<Vec2d>
 }
 
 data class Rect(val leftTop: Vec2d, val size: Vec2d): Figure() {
-	val left: Int = this.leftTop.x
-	val top: Int = this.leftTop.y
-	val right: Int = this.left + this.size.x
-	val bottom: Int = this.top + this.size.y
+	val left: Double = this.leftTop.x
+	val top: Double = this.leftTop.y
+	val right: Double = this.left + this.size.x
+	val bottom: Double = this.top + this.size.y
 
-	val width: Int = this.size.x
-	val height: Int = this.size.y
+	val width: Double = this.size.x
+	val height: Double = this.size.y
 
 	override fun paint(g: PGraphics) {
 		g.rect(this.left.toFloat(), this.top.toFloat(), this.right.toFloat(), this.bottom.toFloat())
 	}
 
 	override val circumscribedRect get() = this
+
+	override val vertices: List<Vec2d> get() = listOf(
+			this.leftTop,
+			Vec2d(this.right, this.top),
+			Vec2d(this.right, this.bottom),
+			Vec2d(this.left, this.bottom))
 }
 
-data class Polygon(val vertices: List<Vec2d>): Figure() {
+data class Polygon(override val vertices: List<Vec2d>): Figure() {
 	// TODO 空の vertices は不可
 
 	override fun paint(g: PGraphics) {
+		// TODO 並んだ矩形を塗るとき、上に接する矩形の下枠線を潰してしまう（結果、横枠線がなくなる）。どうすればいいのか？
+//		if (Math.random() < 0.25) {
 		g.beginShape()
 		this.vertices.forEach {
 			g.vertex(it.x.toFloat(), it.y.toFloat())
+//println(it)
 		}
 		g.endShape()
 	}

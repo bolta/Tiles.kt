@@ -6,11 +6,13 @@ import com.bolta_lab.tiles.Rect
 import com.bolta_lab.tiles.Vec2d
 import kotlin.coroutines.experimental.buildSequence
 
-fun matrix(arrangeTiles: (Vec2d) -> Sequence<Vec2d>, tileSize: Vec2d): Divider = fun(figure: Figure): Sequence<Figure> {
-	val rect = figure.circumscribedRect
-	val tileOrderByIndex = arrangeTiles(Vec2d(rect.width divByTiles tileSize.x, rect.height divByTiles  tileSize.y))
+data class Index2d(val x: Int, val y: Int)
 
-	fun tileIndexToRect(tileIndex: Vec2d): Rect = Rect(
+fun matrix(arrangeTiles: (Index2d) -> Sequence<Index2d>, tileSize: Vec2d): Divider = fun(figure: Figure): Sequence<Figure> {
+	val rect = figure.circumscribedRect
+	val tileOrderByIndex = arrangeTiles(Index2d(rect.width divByTiles tileSize.x, rect.height divByTiles  tileSize.y))
+
+	fun tileIndexToRect(tileIndex: Index2d): Rect = Rect(
 			Vec2d(rect.left + tileSize.x * tileIndex.x, rect.top + tileSize.y * tileIndex.y),
 			tileSize)
 // 非矩形タイル実験
@@ -30,9 +32,9 @@ fun lrtb(tileSize: Vec2d): Divider =
 		matrix({ parent -> buildSequence {
 			(0 until parent.y).forEach { y ->
 				(0 until parent.x).forEach { x ->
-					yield(Vec2d(x, y))
+					yield(Index2d(x, y))
 				}
 			}
 		} }, tileSize)
 
-private infix fun Int.divByTiles(tileLen: Int) = (this - 1) / tileLen + 1
+private infix fun Double.divByTiles(tileLen: Double) = ((this - 1) / tileLen).toInt() + 1

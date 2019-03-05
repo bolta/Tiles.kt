@@ -37,9 +37,11 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Tiles_main" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.esri.geometry:esri-geometry-api:2.2.2" level="project" />
     <orderEntry type="library" name="Gradle: org.processing:core:3.3.7" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.10" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.6" level="project" />
     <orderEntry type="library" name="Gradle: org.jogamp.gluegen:gluegen-rt-main:2.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jogamp.jogl:jogl:2.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jogamp.jogl:jogl-all-main:2.3.2" level="project" />

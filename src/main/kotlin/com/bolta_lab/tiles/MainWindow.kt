@@ -6,6 +6,7 @@ import com.esri.core.geometry.*
 import com.esri.core.geometry.Polygon
 import processing.core.PApplet
 import processing.core.PConstants
+import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 
 class MainWindow(val rect: Rect, val divider: Divider, val colors: Sequence<Color>) : PApplet() {
@@ -20,35 +21,29 @@ class MainWindow(val rect: Rect, val divider: Divider, val colors: Sequence<Colo
 		val figures = this.divider(this.rect)
 		this.rectMode(PConstants.CORNER)
 
-//		val mask = this.createGraphics(this.width, this.height)
-//		mask.beginDraw()
-//		run {
-//			mask.triangle(30f, 480f, 256f, 30f, 480f, 480f)
-//		}
-//		mask.endDraw()
-
-//		val canvas = this.createGraphics(this.width, this.height)
-
-//		canvas.beginDraw()
+		val rand = Random()
 		figures.zip(this.colors).forEach { (figure_, color) ->
-			val figure = clipExper(figure_)
-			if (figure !== null && figure.vertices.count() > 0) { // TODO 本当は zip する前に飛ばす
+			if (true || rand.nextDouble() < 0.25) { // 実験：clip がちゃんとかかっている確認のため描画を間引く
 
-				/*canvas*/this.g.fill(256 * color.red, 256 * color.green, 256 * color.blue)
-				figure.paint(/*canvas*/this.g)
-				//			this.rect(figure.left.toFloat(), figure.top.toFloat(), figure.right.toFloat(), figure.bottom.toFloat())
+				val figure = clipExper(figure_)
+//				val figure = figure_
+				if (figure !== null && figure.vertices.count() > 0) { // TODO 本当は zip する前に飛ばす
+
+					this.g.fill(256 * color.red, 256 * color.green, 256 * color.blue)
+//					this.g.stroke(0f, 0f,0f)//255f, 255f, 255f)
+//					this.g.strokeWeight(3f)
+					figure.paint(this.g)
+				}
 			}
 		}
-//		canvas.mask(mask)
-//		canvas.endDraw()
-
-//		this.g.image(canvas, 0f, 0f)
 
 		println((System.currentTimeMillis() - start).toString() + " ms")
 	}
 }
 
 private fun clipExper(figure: Figure): Figure? {
+	if (figure.vertices.isEmpty()) return null // TODO どんな場合？
+
 	fun v2p(v: Vec2d) = Point(v.x.toDouble(), v.y.toDouble())
 	fun toEsriPolygon(vertices: List<Vec2d>): Polygon {
 		val poly = Polygon()
@@ -57,23 +52,19 @@ private fun clipExper(figure: Figure): Figure? {
 		vertices.drop(1).forEach { v -> poly.lineTo(v2p(v)) }
 		return poly
 	}
+
 	val figureEsri = toEsriPolygon(figure.vertices)
 	val clipEsri = toEsriPolygon(listOf(Vec2d(30.0, 480.0), Vec2d(256.0, 30.0), Vec2d(480.0, 480.0)))
 
-//	val clipped = OperatorIntersection.local().execute(
-//			SimpleGeometryCursor(figureEsri), SimpleGeometryCursor(clipEsri),
-//			SpatialReference.create(4326), // これはなんだ？？
-//			null, -1)
-//	val resultVertices = enumVertices(clipped).toList()
 	val clipped = OperatorIntersection.local().execute(figureEsri, clipEsri,
 			SpatialReference.create(4326), // これはなんだ？？
 			null)
-//	val resultVertices = enumVertices(clipped).toList()
-	return if (clipped.type.value() == Geometry.GeometryType.Polygon) com.bolta_lab.tiles.Polygon(
-				(clipped as Polygon).coordinates2D.map { Vec2d(it.x, it.y) })
-	else null
 
-//	return com.bolta_lab.tiles.Polygon(resultVertices)
+	return if (clipped.type.value() == Geometry.GeometryType.Polygon) {
+		com.bolta_lab.tiles.Polygon((clipped as Polygon).coordinates2D.map { Vec2d(it.x, it.y) })
+	} else {
+		null
+	}
 }
 
 private fun enumVertices(geom: Geometry): Sequence<Vec2d> = buildSequence {

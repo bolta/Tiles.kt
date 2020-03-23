@@ -52,6 +52,9 @@ data class Polygon(override val vertices: List<Vec2d>): Figure() {
 			g.vertex(it.x.toFloat(), it.y.toFloat())
 //println(it)
 		}
+		this.vertices.firstOrNull()?.let {
+			g.vertex(it.x.toFloat(), it.y.toFloat())
+		}
 		g.endShape()
 	}
 

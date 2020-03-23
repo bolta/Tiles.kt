@@ -12,20 +12,24 @@ fun main(args: Array<String>) {
 //	val window = MainWindow(Rect(Vec2d(0, 0), Vec2d(1024, 768)),
 //			composite(lrtb(Vec2d(128, 128)), lrtb(Vec2d(64, 64)), lrtb(Vec2d(8, 8))),
 //			defaultColorGen(Random()))
-	val settings = parseSettings(StringReader("""
-		({
-			size: [512, 768],
-			divider: {
-				type: 'lrtb',
-				tileSize: [16, 16],
+//	val settings = parseSettings(StringReader("""
+//		({
+//			size: [512, 768],
+//			divider: {
+//				type: 'lrtb',
+//				tileSize: [16, 16],
+//
+//			},
+//			colors:{
+//
+//			},
+//		})
+//	""".trimIndent()))
 
-			},
-			colors:{
 
-			},
-		})
-	""".trimIndent()))
-	val window = MainWindow(Rect(Vec2d(0.0, 0.0), settings.size), settings.divider, settings.colors)
+	val window = MainWindow(Rect(Vec2d(0.0, 0.0), Vec2d(512.0, 768.0)),
+			composite(lrtb(Vec2d(128.0, 128.0)), lrtb(Vec2d(8.0, 8.0))),
+			defaultColorGen(Random()))
 
 	PApplet.runSketch((listOf(window.javaClass.canonicalName) + args).toTypedArray(), window)
 }

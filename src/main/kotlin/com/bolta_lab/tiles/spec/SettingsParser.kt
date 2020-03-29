@@ -1,8 +1,9 @@
-package com.bolta_lab.tiles.settings
+package com.bolta_lab.tiles.spec
 
 import com.bolta_lab.js.engine
 import com.bolta_lab.js.evalAs
 import com.bolta_lab.js.required
+import com.bolta_lab.tiles.RenderingParameterSet
 import com.bolta_lab.tiles.Vec2d
 import com.bolta_lab.tiles.color.defaultColorGen
 import com.bolta_lab.tiles.divider.lrtb
@@ -10,7 +11,7 @@ import java.io.Reader
 import java.util.*
 import javax.script.Bindings
 
-fun parseSettings(script: Reader): Settings {
+fun parseSettings(script: Reader): RenderingParameterSet {
 	val js = engine()
 	val settings = js.evalAs<Bindings>(script)
 
@@ -21,7 +22,7 @@ fun parseSettings(script: Reader): Settings {
 	// TODO 仮
 	val colors = defaultColorGen(Random())
 
-	return Settings(size, divider, colors)
+	return RenderingParameterSet(size, divider, colors)
 }
 
 private fun parseSize(array: Bindings): Vec2d = Vec2d(array.required<Number>("0").toDouble(), array.required<Number>("1").toDouble())

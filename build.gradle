@@ -23,7 +23,7 @@ dependencies {
 //    complie "org.processing.core:3.3.7"
     compile group: 'com.esri.geometry', name: 'esri-geometry-api', version: '2.2.2'
     compile group: 'org.processing', name: 'core', version: '3.3.7'
-
+    compile 'org.hjson:hjson:3.0.0'
 }
 
 compileKotlin {

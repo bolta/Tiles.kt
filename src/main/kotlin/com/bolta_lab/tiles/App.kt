@@ -6,6 +6,7 @@ import com.bolta_lab.tiles.divider.lrtb
 import com.bolta_lab.tiles.spec.compileSpec
 import processing.core.PApplet
 import java.io.StringReader
+import java.io.StringWriter
 import java.util.*
 
 fun main(args: Array<String>) {
@@ -13,18 +14,34 @@ fun main(args: Array<String>) {
 		{
 			size: [1024, 768]
 			divider: {
-				type: "lrtb"
-				tileSize: [16, 8]
+				type: composite
+				dividers: [
+					{
+						type: lrtb
+						tileSize: [64, 64]
+					}
+					{
+						type: lrtb
+						tileSize: [16, 16]
+					}
+				]
 			}
 			colors: {
-				type: "default"
-				seed: 40
+				type: fixedTest
+//				seed: 40
 			}
 		}
 	""".trimIndent()
 
-	val params = spec.reader().use { compileSpec(it) }
-	val window = MainWindow(params)
+	val masterSeed = System.currentTimeMillis()
 
+	val writer = StringWriter()
+	val params = writer.buffered().use {
+		spec.reader().use { reader -> compileSpec(reader, masterSeed, writer) }
+	}
+	writer.close()
+	println(writer.toString())
+
+	val window = MainWindow(params)
 	PApplet.runSketch((listOf(window.javaClass.canonicalName) + args).toTypedArray(), window)
 }

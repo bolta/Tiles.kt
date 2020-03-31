@@ -1,5 +1,6 @@
 package com.bolta_lab.tiles
 
+import processing.core.PConstants
 import processing.core.PGraphics
 
 data class Vec2d(val x: Double, val y: Double)
@@ -29,7 +30,8 @@ data class Rect(val leftTop: Vec2d, val size: Vec2d): Figure() {
 	val height: Double = this.size.y
 
 	override fun paint(g: PGraphics) {
-		g.rect(this.left.toFloat(), this.top.toFloat(), this.right.toFloat(), this.bottom.toFloat())
+		g.rectMode(PConstants.CORNER)
+		g.rect(this.left.toFloat(), this.top.toFloat(), this.width.toFloat(), this.height.toFloat())
 	}
 
 	override val circumscribedRect get() = this
@@ -65,6 +67,6 @@ data class Polygon(override val vertices: List<Vec2d>): Figure() {
 		val right = vertices.maxBy { it.x }!!.x
 		val bottom = vertices.maxBy { it.y }!!.y
 
-		Rect(Vec2d(left, top), Vec2d(right, bottom))
+		Rect(Vec2d(left, top), Vec2d(right - left, bottom - top))
 	}
 }

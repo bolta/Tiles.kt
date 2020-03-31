@@ -5,10 +5,7 @@ import com.bolta_lab.tiles.Vec2d
 import com.bolta_lab.tiles.color.Color
 import com.bolta_lab.tiles.color.defaultColorGen
 import com.bolta_lab.tiles.color.fixedTest
-import com.bolta_lab.tiles.divider.Divider
-import com.bolta_lab.tiles.divider.composite
-import com.bolta_lab.tiles.divider.diagonal
-import com.bolta_lab.tiles.divider.lrtb
+import com.bolta_lab.tiles.divider.*
 import org.hjson.JsonArray
 import org.hjson.JsonObject
 import org.hjson.JsonValue
@@ -57,6 +54,11 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 		"diagonal" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			diagonal(tileSize)
+		}
+		"scattering" -> {
+			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val seed = obj.getRandomSeedOrSetDefault(seeds)
+			scattering(tileSize, Random(seed))
 		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }

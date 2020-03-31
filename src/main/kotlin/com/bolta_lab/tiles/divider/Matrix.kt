@@ -3,6 +3,7 @@ package com.bolta_lab.tiles.divider
 import com.bolta_lab.tiles.Figure
 import com.bolta_lab.tiles.Rect
 import com.bolta_lab.tiles.Vec2d
+import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 
 data class Index2d(val x: Int, val y: Int)
@@ -49,6 +50,19 @@ fun diagonal(tileSize: Vec2d): Divider = matrix(tileSize) { parent ->
 		}
 	}.filter { (x, y) -> x < parent.x && y < parent.y }
 			.take(parent.x * parent.y)
+}
+
+fun scattering(tileSize: Vec2d, rand: Random): Divider = matrix(tileSize) { parent ->
+	buildSequence {
+		// x 座標の出現順
+		val allXs = (0 until parent.x).flatMap { x -> List(parent.y) { x } }.shuffled(rand)
+		// x 座標の各々に対して次に割り当たる y 座標
+		val xToY = MutableList(parent.x) { parent.y - 1 }
+		allXs.forEach { x ->
+			yield(Index2d(x, xToY[x]))
+			-- xToY[x]
+		}
+	}
 }
 
 private infix fun Double.divByTiles(tileLen: Double) = ((this - 1) / tileLen).toInt() + 1

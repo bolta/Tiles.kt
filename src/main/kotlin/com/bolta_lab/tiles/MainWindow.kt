@@ -20,6 +20,19 @@ class MainWindow(val params: RenderingParameterSet) : PApplet() {
 		println((System.currentTimeMillis() - start).toString() + " ms")
 		this.save("${this.width}x${this.height}_${System.currentTimeMillis()}.png")
 	}
+
+// ゆっくり描画するときはこっちを有効化
+//	private var renderingIter: Iterator<() -> Unit>? = null // TODO もっと正しい書き方があったはずなのだが
+//	override fun setup() {
+//		val procs = renderAsSequence(this.g, this.params)
+//		this.renderingIter = procs.iterator()
+//	}
+//	override fun draw() {
+//		if (! this.renderingIter !!.hasNext()) return
+//
+//		this.renderingIter !!.next()()
+//	}
+// ゆっくり描画ここまで
 }
 
 //private fun clipExper(figure: Figure): Figure? {

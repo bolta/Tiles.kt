@@ -9,7 +9,12 @@ fun composite(vararg dividers: Divider): Divider = fun(figure: Figure): Sequence
 	var result = sequenceOf(figure)
 	dividers.forEach { divider ->
 		result = result.flatMap { parent ->
-			divider(parent).map { clipExper(it, parent) }.filter { it !== null }.map { it !! }
+			divider(parent).map {
+				clipExper(it, parent)
+			}.filter {
+				// TODO null だけでなく頂点なしもはじくべきでは？
+				it !== null
+			}.map { it !! }
 		}
 	}
 

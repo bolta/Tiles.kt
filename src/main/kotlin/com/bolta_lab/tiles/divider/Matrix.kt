@@ -1,14 +1,13 @@
 package com.bolta_lab.tiles.divider
 
 import com.bolta_lab.tiles.Figure
-import com.bolta_lab.tiles.Polygon
 import com.bolta_lab.tiles.Rect
 import com.bolta_lab.tiles.Vec2d
 import kotlin.coroutines.experimental.buildSequence
 
 data class Index2d(val x: Int, val y: Int)
 
-fun matrix(arrangeTiles: (Index2d) -> Sequence<Index2d>, tileSize: Vec2d): Divider = fun(figure: Figure): Sequence<Figure> {
+fun matrix(tileSize: Vec2d, arrangeTiles: (Index2d) -> Sequence<Index2d>): Divider = fun(figure: Figure): Sequence<Figure> {
 	val rect = figure.circumscribedRect
 	val tileOrderByIndex = arrangeTiles(Index2d(rect.width divByTiles tileSize.x, rect.height divByTiles  tileSize.y))
 
@@ -28,23 +27,28 @@ fun matrix(arrangeTiles: (Index2d) -> Sequence<Index2d>, tileSize: Vec2d): Divid
 	return tileOrderByIndex.map(::tileIndexToRect)
 }
 
-fun lrtb(tileSize: Vec2d): Divider =
-		matrix({ parent -> buildSequence {
-			(0 until parent.y).forEach { y ->
-				(0 until parent.x).forEach { x ->
-					yield(Index2d(x, y))
-				}
+fun lrtb(tileSize: Vec2d): Divider = matrix(tileSize) { parent ->
+	buildSequence {
+		(0 until parent.y).forEach { y ->
+			(0 until parent.x).forEach { x ->
+				yield(Index2d(x, y))
 			}
-		} }, tileSize)
+		}
+	}
+}
 
-fun diagonal(tileSize: Vec2d): Divider = matrix({ parent -> buildSequence {
-			generateSequence(0) {it + 1}.forEach { yStart ->
-				val ys = (yStart downTo 0).asSequence()
-				val xs = generateSequence(0) {it + 1}
-				xs.zip(ys).forEach { (x, y) ->
-					yield(Index2d(x, y))
-				}
+fun diagonal(tileSize: Vec2d): Divider = matrix(tileSize) { parent ->
+	buildSequence {
+		val from0ToInf = generateSequence(0) { it + 1 }
+		from0ToInf.forEach { yStart ->
+			val ys = (yStart downTo 0).asSequence()
+			val xs = from0ToInf
+			xs.zip(ys).forEach { (x, y) ->
+				yield(Index2d(x, y))
 			}
-		}.filter { (x, y) -> x < parent.x && y < parent.y }.take(parent.x * parent.y) }, tileSize)
+		}
+	}.filter { (x, y) -> x < parent.x && y < parent.y }
+			.take(parent.x * parent.y)
+}
 
 private infix fun Double.divByTiles(tileLen: Double) = ((this - 1) / tileLen).toInt() + 1

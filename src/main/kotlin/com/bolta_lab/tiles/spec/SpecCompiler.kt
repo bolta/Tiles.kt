@@ -7,6 +7,7 @@ import com.bolta_lab.tiles.color.defaultColorGen
 import com.bolta_lab.tiles.color.fixedTest
 import com.bolta_lab.tiles.divider.Divider
 import com.bolta_lab.tiles.divider.composite
+import com.bolta_lab.tiles.divider.diagonal
 import com.bolta_lab.tiles.divider.lrtb
 import org.hjson.JsonArray
 import org.hjson.JsonObject
@@ -52,6 +53,10 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 		"lrtb" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			lrtb(tileSize)
+		}
+		"diagonal" -> {
+			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			diagonal(tileSize)
 		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }

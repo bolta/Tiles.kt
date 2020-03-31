@@ -37,4 +37,14 @@ fun lrtb(tileSize: Vec2d): Divider =
 			}
 		} }, tileSize)
 
+fun diagonal(tileSize: Vec2d): Divider = matrix({ parent -> buildSequence {
+			generateSequence(0) {it + 1}.forEach { yStart ->
+				val ys = (yStart downTo 0).asSequence()
+				val xs = generateSequence(0) {it + 1}
+				xs.zip(ys).forEach { (x, y) ->
+					yield(Index2d(x, y))
+				}
+			}
+		}.filter { (x, y) -> x < parent.x && y < parent.y }.take(parent.x * parent.y) }, tileSize)
+
 private infix fun Double.divByTiles(tileLen: Double) = ((this - 1) / tileLen).toInt() + 1

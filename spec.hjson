@@ -1,0 +1,26 @@
+{
+	size: [1024, 768]
+	divider: {
+		type: endsToMiddle
+		divider: {
+			type: composite
+			dividers: [
+				{
+					type: diagonal
+					tileSize: [64, 64]
+				}
+				{
+					type: endsToMiddle
+					divider: {
+						type: diagonal
+						tileSize: [1, 4]
+					}
+				}
+			]
+		}
+    }
+    colors: {
+        type: default
+        maxChangeAbs: 0.005
+    }
+}

@@ -1,47 +1,35 @@
 package com.bolta_lab.tiles
 
-import com.bolta_lab.tiles.color.defaultColorGen
-import com.bolta_lab.tiles.divider.composite
-import com.bolta_lab.tiles.divider.lrtb
 import com.bolta_lab.tiles.spec.compileSpec
 import processing.core.PApplet
-import java.io.StringReader
+import java.io.FileReader
+import java.io.FileWriter
 import java.io.StringWriter
-import java.util.*
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-	val spec = """
-		{
-			size: [1024, 768]
-			divider: {
-				type: composite
-				dividers: [
-					{
-						type: lrtb
-						tileSize: [64, 64]
-					}
-					{
-						type: lrtb
-						tileSize: [16, 16]
-					}
-				]
-			}
-			colors: {
-				type: fixedTest
-//				seed: 40
-			}
-		}
-	""".trimIndent()
-
-	val masterSeed = System.currentTimeMillis()
-
-	val writer = StringWriter()
-	val params = writer.buffered().use {
-		spec.reader().use { reader -> compileSpec(reader, masterSeed, writer) }
+	if (args.size < 1) {
+		System.err.println("Please specify the spec (hjson) file.")
+		exitProcess(1)
 	}
-	writer.close()
-	println(writer.toString())
+	val specFileName = args[0]
 
-	val window = MainWindow(params)
+	val now = System.currentTimeMillis()
+
+	val masterSeed = now
+	val resultSpec = StringWriter()
+	val params = resultSpec.buffered().use { resultSpec_ ->
+		FileReader(specFileName).buffered().use { spec ->
+			compileSpec(spec, masterSeed, resultSpec_)
+		}
+	}
+	resultSpec.close()
+
+	val filenameBase = "${params.size.x.toInt()}x${params.size.y.toInt()}_$now"
+	FileWriter("$filenameBase.hjson").buffered().use {
+		it.write(resultSpec.toString())
+	}
+
+	val window = MainWindow(params, "$filenameBase.png")
 	PApplet.runSketch((listOf(window.javaClass.canonicalName) + args).toTypedArray(), window)
 }

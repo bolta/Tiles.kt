@@ -5,13 +5,10 @@ import java.lang.Float.min
 import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 
-fun defaultColorGen(rand: Random): Sequence<Color> {
-	// TODO 状態を中に持たず、外から与えるようにする
-	// TODO ステップの大きさも外から与える
-//	val rand = Random()
+fun defaultColorGen(maxChangeAbs: Float, rand: Random): Sequence<Color> {
 	var c = Rgb(rand.nextFloat(), rand.nextFloat(), rand.nextFloat())
 
-	fun nextComponent(cur: Float) = min(1f, max(0f, cur + rand.nextFloat() * 8 / 256f - 4 / 256f))
+	fun nextComponent(cur: Float) = min(1f, max(0f, cur + rand.nextFloat() * 2 * maxChangeAbs - maxChangeAbs))
 
 	return buildSequence {
 		while (true) {

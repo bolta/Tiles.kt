@@ -60,6 +60,11 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
 			scattering(tileSize, Random(seed))
 		}
+
+		"endsToMiddle" -> {
+			val divider = compileDivider(obj["divider"].asObject(), seeds)
+			endsToMiddle(divider)
+		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())
@@ -73,9 +78,10 @@ private fun compileColors(obj: JsonObject, seeds: SeedGenerator): Sequence<Color
 
 	return when (type) {
 		"default" -> {
+			val maxChangeAbs = obj["maxChangeAbs"]?.asFloat() ?: 4 / 256f
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
 			val rand = Random(seed)
-			defaultColorGen(rand)
+			defaultColorGen(maxChangeAbs, rand)
 		}
 		"fixedTest" -> fixedTest()
 

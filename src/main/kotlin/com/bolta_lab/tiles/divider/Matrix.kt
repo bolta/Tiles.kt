@@ -8,9 +8,9 @@ import kotlin.coroutines.experimental.buildSequence
 
 data class Index2d(val x: Int, val y: Int)
 
-fun matrix(tileSize: Vec2d, arrangeTiles: (Index2d) -> Sequence<Index2d>): Divider = fun(figure: Figure): Sequence<Figure> {
+fun matrix(tileSize: Vec2d, arrangeTiles: (Index2d) -> Sequence<Index2d>): Divider = fun (figure: Figure): Sequence<Figure> {
 	val rect = figure.circumscribedRect
-	val tileOrderByIndex = arrangeTiles(Index2d(rect.width divByTiles tileSize.x, rect.height divByTiles  tileSize.y))
+	val tileOrderByIndex = arrangeTiles(Index2d(rect.width divByTiles tileSize.x, rect.height divByTiles tileSize.y))
 
 	fun tileIndexToRect(tileIndex: Index2d): Rect = Rect(
 			Vec2d(rect.left + tileSize.x * tileIndex.x, rect.top + tileSize.y * tileIndex.y),

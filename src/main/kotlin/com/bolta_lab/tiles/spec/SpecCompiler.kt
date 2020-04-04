@@ -21,19 +21,23 @@ import java.util.*
  * @param masterSeed 種を生成するための種。この「種の種」も文書に記録する
  *
  */
-fun compileSpec(script: Reader, masterSeed: Long, resultScript: Writer): RenderingParameterSet {
+fun compileSpec(script: Reader, defaultMasterSeed: Long, resultScript: Writer): RenderingParameterSet {
 	// TODO エラーを親切に出す
 	val spec = JsonValue.readHjson(script).asObject()!!
+
+	val masterSeed = spec["masterSeed"]?.asLong() ?: defaultMasterSeed
+
 	spec["masterSeed"] = masterSeed
 	val seeds = SeedGenerator(masterSeed)
 
 	val size = compileSize(spec["size"].asArray() !!)
 	val divider = compileDivider(spec["divider"].asObject() !!, seeds)
 	val colors = compileColors(spec["colors"].asObject() !!, seeds)
+	val border = compileBorder(spec["border"].asObject() !!, seeds)
 
 	spec.writeTo(resultScript, Stringify.HJSON)
 
-	return RenderingParameterSet(size, divider, colors)
+	return RenderingParameterSet(size, divider, colors, border)
 }
 
 private class SeedGenerator(masterSeed: Long) {
@@ -88,6 +92,24 @@ private fun compileColors(obj: JsonObject, seeds: SeedGenerator): Sequence<Color
 		else -> throw SpecException("Unknown color generator type: $type")
 	}
 }
+
+private fun compileBorder(obj: JsonObject, seeds: SeedGenerator): BorderSetter {
+	val type = obj["type"].asString() !!
+
+	return when (type) {
+		"none" -> none()
+		"times" -> {
+			val coeff = obj["coeff"].asFloat()
+
+			// TODO width は none 以外の多くでは共通になるので、今後種類が増えたときは適用のしかたを共通化したい
+			val width = obj["width"]?.asFloat() ?: 1f
+			times(coeff, width)
+		}
+
+		else -> throw SpecException("Unknown border type: $type")
+	}
+}
+
 
 /**
  * オブジェクトのプロパティとして記載された種を取得する。

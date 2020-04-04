@@ -5,6 +5,7 @@ import processing.core.PApplet
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.StringWriter
+import java.text.SimpleDateFormat
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -25,11 +26,18 @@ fun main(args: Array<String>) {
 	}
 	resultSpec.close()
 
-	val filenameBase = "${params.size.x.toInt()}x${params.size.y.toInt()}_$now"
+	val filenameBase = makeFilenameBase(params.size, now)
 	FileWriter("$filenameBase.hjson").buffered().use {
 		it.write(resultSpec.toString())
 	}
 
 	val window = MainWindow(params, "$filenameBase.png")
 	PApplet.runSketch((listOf(window.javaClass.canonicalName) + args).toTypedArray(), window)
+}
+
+private fun makeFilenameBase(size: Vec2d, now: Long): String {
+	val width = size.x.toInt()
+	val height = size.y.toInt()
+	val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(now)
+	return "${width}x${height}_${timestamp}"
 }

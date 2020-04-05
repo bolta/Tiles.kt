@@ -53,16 +53,19 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 	return when (type) {
 		"lrtb" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
-			lrtb(tileSize)
+			val shape = compileMatrixShape(obj)
+			matrix(tileSize, ::arrangeLrtb, shape)
 		}
 		"diagonal" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
-			diagonal(tileSize)
+			val shape = compileMatrixShape(obj)
+			matrix(tileSize, ::arrangeDiagonal, shape)
 		}
 		"scattering" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
-			scattering(tileSize, Random(seed))
+			val shape = compileMatrixShape(obj)
+			matrix(tileSize, arrangeScattering(Random(seed)), shape)
 		}
 
 		"endsToMiddle" -> {
@@ -74,6 +77,15 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			composite(* dividers.toTypedArray())
 		}
 		else -> throw SpecException("Unknown divider type: $type")
+	}
+}
+
+private fun compileMatrixShape(divider: JsonObject) = (divider["shape"]?.asString() ?: "grid").let { type ->
+	when (type) {
+		"grid" -> ::generateGrid
+		"slash" -> generateSlash()
+		"backslash" -> generateSlash(true)
+		else -> throw SpecException("Unknown matrix shape type: $type")
 	}
 }
 

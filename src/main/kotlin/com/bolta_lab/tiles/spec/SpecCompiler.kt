@@ -61,6 +61,12 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val shape = compileMatrixShape(obj)
 			matrix(tileSize, ::arrangeDiagonal, shape)
 		}
+		"random" -> {
+			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val seed = obj.getRandomSeedOrSetDefault(seeds)
+			val shape = compileMatrixShape(obj)
+			matrix(tileSize, arrangeRandom(Random(seed)), shape)
+		}
 		"scattering" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
@@ -76,6 +82,7 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())
 		}
+
 		else -> throw SpecException("Unknown divider type: $type")
 	}
 }

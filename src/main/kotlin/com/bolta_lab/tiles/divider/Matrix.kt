@@ -38,7 +38,7 @@ fun arrangeDiagonal(parent: Index2d) = buildSequence {
 }.filter { (x, y) -> x < parent.x && y < parent.y }
 		.take(parent.x * parent.y)
 
-//fun random
+fun arrangeRandom(rand: Random) = fun (parent: Index2d) = arrangeLrtb(parent).asIterable().shuffled().asSequence()
 
 fun arrangeScattering(rand: Random) = fun (parent: Index2d) = buildSequence {
 	// x 座標の出現順

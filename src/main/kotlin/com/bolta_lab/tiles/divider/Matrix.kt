@@ -6,12 +6,15 @@ import com.bolta_lab.tiles.Rect
 import com.bolta_lab.tiles.Vec2d
 import java.util.*
 import kotlin.coroutines.experimental.buildSequence
+import kotlin.math.sqrt
 
 fun matrix(tileSize: Vec2d, arrangeTiles: (Index2d) -> Sequence<Index2d>,
-		generateFigures: (Rect, Vec2d, Index2d) -> Figure = ::generateGrid) = fun (figure: Figure): Sequence<Figure> {
+		generateFigures: (Rect, Vec2d, Index2d) -> Figure = ::generateGrid,
+		supplementCount: Index2d = Index2d(0, 0)) = fun (figure: Figure): Sequence<Figure> {
 	val rect = figure.circumscribedRect
 	val tileOrderByIndex = arrangeTiles(
-			Index2d(rect.width divByTiles tileSize.x, rect.height divByTiles tileSize.y))
+			Index2d((rect.width divByTiles tileSize.x) + supplementCount.x,
+					(rect.height divByTiles tileSize.y) + supplementCount.y))
 
 	return tileOrderByIndex.map { index -> generateFigures(rect, tileSize, index) }
 }
@@ -77,5 +80,19 @@ fun generateSlash(backslash: Boolean = false) =
 				}
 			}
 		}
+
+fun generateHex(circumscribedRect: Rect, tileSize: Vec2d, tileIndex: Index2d): Polygon {
+	val origin = Vec2d(circumscribedRect.left + tileSize.x * tileIndex.x /* * 3 / 4*/,
+			circumscribedRect.top + tileSize.y * (tileIndex.y - if (tileIndex.x % 2 == 1) 0.5 else 0.0))
+	val sideLenX = tileSize.x * 2 / 3
+
+	return Polygon(listOf(
+			origin,
+			Vec2d(origin.x + sideLenX, origin.y),
+			Vec2d(origin.x + sideLenX * 3 / 2, origin.y + tileSize.y / 2),
+			Vec2d(origin.x + sideLenX, origin.y + tileSize.y),
+			Vec2d(origin.x, origin.y + tileSize.y),
+			Vec2d(origin.x - sideLenX / 2, origin.y + tileSize.y / 2)))
+}
 
 private infix fun Double.divByTiles(tileLen: Double) = ((this - 1) / tileLen).toInt() + 1

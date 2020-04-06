@@ -1,10 +1,10 @@
 package com.bolta_lab.tiles.spec
 
+import com.bolta_lab.tiles.Figure
+import com.bolta_lab.tiles.Rect
 import com.bolta_lab.tiles.RenderingParameterSet
 import com.bolta_lab.tiles.Vec2d
-import com.bolta_lab.tiles.color.Color
-import com.bolta_lab.tiles.color.defaultColorGen
-import com.bolta_lab.tiles.color.fixedTest
+import com.bolta_lab.tiles.color.*
 import com.bolta_lab.tiles.divider.*
 import org.hjson.JsonArray
 import org.hjson.JsonObject
@@ -53,25 +53,25 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 	return when (type) {
 		"lrtb" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
-			val shape = compileMatrixShape(obj)
-			matrix(tileSize, ::arrangeLrtb, shape)
+			val (shape, supplement) = compileMatrixShape(obj)
+			matrix(tileSize, ::arrangeLrtb, shape, supplement)
 		}
 		"diagonal" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
-			val shape = compileMatrixShape(obj)
-			matrix(tileSize, ::arrangeDiagonal, shape)
+			val (shape, supplement) = compileMatrixShape(obj)
+			matrix(tileSize, ::arrangeDiagonal, shape, supplement)
 		}
 		"random" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
-			val shape = compileMatrixShape(obj)
-			matrix(tileSize, arrangeRandom(Random(seed)), shape)
+			val (shape, supplement) = compileMatrixShape(obj)
+			matrix(tileSize, arrangeRandom(Random(seed)), shape, supplement)
 		}
 		"scattering" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
-			val shape = compileMatrixShape(obj)
-			matrix(tileSize, arrangeScattering(Random(seed)), shape)
+			val (shape, supplement) = compileMatrixShape(obj)
+			matrix(tileSize, arrangeScattering(Random(seed)), shape, supplement)
 		}
 
 		"endsToMiddle" -> {
@@ -88,10 +88,14 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 }
 
 private fun compileMatrixShape(divider: JsonObject) = (divider["shape"]?.asString() ?: "grid").let { type ->
+	fun shapeAndSupplement(generateFigures: (Rect, Vec2d, Index2d) -> Figure,
+			supplementCount: Index2d = Index2d(0, 0)) = Pair(generateFigures, supplementCount)
 	when (type) {
-		"grid" -> ::generateGrid
-		"slash" -> generateSlash()
-		"backslash" -> generateSlash(true)
+		"grid" -> shapeAndSupplement(::generateGrid)
+		"slash" -> shapeAndSupplement(generateSlash())
+		"backslash" -> shapeAndSupplement(generateSlash(true))
+		// TODO hex には (1, 1) がつきものなので、ここではなく generateHex() 側で記述したい
+		"hex" -> shapeAndSupplement(::generateHex, Index2d(1, 1))
 		else -> throw SpecException("Unknown matrix shape type: $type")
 	}
 }

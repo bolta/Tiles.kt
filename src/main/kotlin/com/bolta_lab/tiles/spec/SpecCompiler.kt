@@ -105,7 +105,7 @@ private fun compileColors(obj: JsonObject, seeds: SeedGenerator): Sequence<Color
 
 	return when (type) {
 		"default" -> {
-			val maxChangeAbs = obj["maxChangeAbs"]?.asFloat() ?: 4 / 256f
+			val maxChange = obj["maxChange"]?.asFloat() ?: 4 / 256f
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
 			val rand = Random(seed)
 			defaultColorGen(maxChangeAbs, rand)

@@ -43,12 +43,8 @@ fun isMagentaish(c: Color) = c.blue > c.green && c.red > c.green
 		&& abs(c.blue - c.red) < c.red - c.green
 
 // 明度の計算をちゃんとした方がいいか？
-fun isBrighterThan(thres: Float) = { c: Color ->
-	((c.red + c.green + c.blue) / 3).let { it > thres }
-}
-fun isDarkerThan(thres: Float) = { c: Color ->
-	((c.red + c.green + c.blue) / 3).let { it < thres }
-}
+fun isBrighterThan(thres: Float) = { c: Color -> (c.red + c.green + c.blue) / 3 > thres }
+fun isDarkerThan(thres: Float) = { c: Color -> (c.red + c.green + c.blue) / 3 < thres }
 
 infix fun ((Color) -> Boolean).and(that: (Color) -> Boolean) = { c: Color -> this(c) && that(c) }
 infix fun ((Color) -> Boolean).or(that: (Color) -> Boolean) = { c: Color -> this(c) || that(c) }

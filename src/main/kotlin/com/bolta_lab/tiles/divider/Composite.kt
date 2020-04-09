@@ -10,6 +10,7 @@ fun composite(vararg dividers: Divider): Divider = fun(figure: Figure): Sequence
 	dividers.forEach { divider ->
 		result = result.flatMap { parent ->
 			divider(parent).map {
+//				it
 				clipExper(it, parent)
 			}.filter {
 				// TODO null だけでなく頂点なしもはじくべきでは？
@@ -49,9 +50,13 @@ private fun clipExper(figure: Figure, clip: Figure): Figure? {
 	val clipped = OperatorIntersection.local().execute(figureEsri, clipEsri,
 			SpatialReference.create(4326), // これはなんだ？？
 			null)
-	return if (clipped.type.value() == Geometry.GeometryType.Polygon) com.bolta_lab.tiles.Polygon(
-			(clipped as Polygon).coordinates2D.map { Vec2d(it.x, it.y) })
-	else null
+
+	if (clipped.type.value() != Geometry.GeometryType.Polygon) return null
+
+	val coords = (clipped as Polygon).coordinates2D
+	if (coords.isEmpty()) return null
+
+	return com.bolta_lab.tiles.Polygon(coords.map { Vec2d(it.x, it.y) })
 }
 
 private fun enumVertices(geom: Geometry): Sequence<Vec2d> = buildSequence {

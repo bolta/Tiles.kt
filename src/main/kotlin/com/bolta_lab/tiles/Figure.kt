@@ -46,7 +46,9 @@ data class Rect(val leftTop: Vec2d, val size: Vec2d): Figure() {
 }
 
 data class Polygon(override val vertices: List<Vec2d>): Figure() {
-	// TODO 空の vertices は不可
+	init {
+		if (vertices.isEmpty()) throw IllegalArgumentException("empty polygon")
+	}
 
 	override fun paint(g: PGraphics) {
 		// TODO 並んだ矩形を塗るとき、上に接する矩形の下枠線を潰してしまう（結果、横枠線がなくなる）。どうすればいいのか？

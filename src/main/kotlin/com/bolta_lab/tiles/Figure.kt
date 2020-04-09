@@ -41,6 +41,8 @@ data class Rect(val leftTop: Vec2d, val size: Vec2d): Figure() {
 			Vec2d(this.right, this.top),
 			Vec2d(this.right, this.bottom),
 			Vec2d(this.left, this.bottom))
+
+	val center get() = Vec2d(this.left + this.width / 2, this.top + this.height / 2)
 }
 
 data class Polygon(override val vertices: List<Vec2d>): Figure() {

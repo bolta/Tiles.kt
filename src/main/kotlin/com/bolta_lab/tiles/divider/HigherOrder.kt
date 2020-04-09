@@ -1,6 +1,7 @@
 package com.bolta_lab.tiles.divider
 
 import com.bolta_lab.tiles.Figure
+import com.bolta_lab.tiles.Vec2d
 import kotlin.coroutines.experimental.buildSequence
 
 /**
@@ -21,4 +22,14 @@ fun endsToMiddle(divider: Divider) = fun (figure: Figure): Sequence<Figure> {
 		// 奇数個の場合は 1 個だけ余っている
 		if (latterHalf.count() > formerHalf.count()) yield(latterHalf.last())
 	}
+}
+
+fun sortByDistance(divider: Divider, origin: Vec2d) = fun (figure: Figure) : Sequence<Figure> {
+	val origResult = divider(figure).toList()
+	fun distSquareFromOrigin(point: Vec2d) =
+			(point.x - origin.x) * (point.x - origin.x) + (point.y - origin.y) * (point.y - origin.y)
+
+	return origResult.sortedBy { figure ->
+		 distSquareFromOrigin(figure.circumscribedRect.center)
+	 }.asSequence()
 }

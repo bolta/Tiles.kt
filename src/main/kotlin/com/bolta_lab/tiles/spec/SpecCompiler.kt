@@ -73,6 +73,12 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val (shape, supplement) = compileMatrixShape(obj)
 			matrix(tileSize, arrangeScattering(Random(seed)), shape, supplement)
 		}
+		"image" -> {
+			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val path = obj["path"].asString()
+			val (shape, supplement) = compileMatrixShape(obj)
+			matrix(tileSize, arrangeImage(path), shape, supplement)
+		}
 
 		"endsToMiddle" -> {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)

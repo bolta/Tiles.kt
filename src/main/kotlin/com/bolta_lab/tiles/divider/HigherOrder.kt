@@ -4,6 +4,7 @@ import com.bolta_lab.tiles.Figure
 import com.bolta_lab.tiles.Vec2d
 import java.util.*
 import kotlin.coroutines.experimental.buildSequence
+import kotlin.math.abs
 
 fun identity(divider: Divider) = divider
 
@@ -30,13 +31,17 @@ fun endsToMiddle(divider: Divider) = fun (figure: Figure): Sequence<Figure> {
 }
 
 fun sometimes(divider: Divider, probability: Double, rand: Random) = fun (figure: Figure) = buildSequence {
-	divider(figure).forEach { if (rand.nextDouble() <= probability) yield(it) }
+	divider(figure).forEach { frag ->
+		if (rand.nextDouble() <= probability) yield(frag)
+	}
 }
 
 fun sortByDistance(divider: Divider, origin: Vec2d) = fun (figure: Figure) : Sequence<Figure> {
 	val origResult = divider(figure).toList()
 	fun distSquareFromOrigin(point: Vec2d) =
 			(point.x - origin.x) * (point.x - origin.x) + (point.y - origin.y) * (point.y - origin.y)
+			// Manhattan distance
+			// abs(point.x - origin.x) /* * (point.x - origin.x)*/ + abs(point.y - origin.y) /* * (point.y - origin.y)*/
 
 	return origResult.sortedBy { figure ->
 		 distSquareFromOrigin(figure.circumscribedRect.center)

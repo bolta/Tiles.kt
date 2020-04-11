@@ -82,11 +82,18 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 		}
 
 		// higher-order dividers
+		"identity" -> {
+			val divider = compileDivider(obj["divider"].asObject(), seeds)
+			identity(divider) // 呼ばなくてもいいのだが…
+		}
+		"reverse" -> {
+			val divider = compileDivider(obj["divider"].asObject(), seeds)
+			reverse(divider)
+		}
 		"endsToMiddle" -> {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)
 			endsToMiddle(divider)
 		}
-		// TODO reverse
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())

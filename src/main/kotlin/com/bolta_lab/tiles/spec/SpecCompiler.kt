@@ -3,7 +3,6 @@ package com.bolta_lab.tiles.spec
 import com.bolta_lab.tiles.*
 import com.bolta_lab.tiles.color.*
 import com.bolta_lab.tiles.divider.*
-import org.hjson.JsonArray
 import org.hjson.JsonObject
 import org.hjson.JsonValue
 import org.hjson.Stringify
@@ -27,7 +26,7 @@ fun compileSpec(script: Reader, defaultMasterSeed: Long, resultScript: Writer): 
 	spec["masterSeed"] = masterSeed
 	val seeds = SeedGenerator(masterSeed)
 
-	val size = compileSize(spec["size"].asArray() !!)
+	val size = compileVec2d(spec["size"])
 	val divider = compileDivider(spec["divider"].asObject() !!, seeds)
 	val colors = compileColors(spec["colors"].asObject() !!, seeds)
 	val border = compileBorder(spec["border"].asObject() !!, seeds)
@@ -43,7 +42,7 @@ private class SeedGenerator(masterSeed: Long) {
 	fun next() = this.random.nextLong()
 }
 
-private fun compileSize(array: JsonArray): Vec2d = Vec2d(array[0].asDouble(), array[1].asDouble())
+private fun compileVec2d(obj: JsonValue): Vec2d = obj.asArray().let { Vec2d(it[0].asDouble(), it[1].asDouble()) }
 
 private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 	val type = obj["type"].asString() !!
@@ -51,29 +50,29 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 	return when (type) {
 		// matrix dividers
 		"lrtb" -> {
-			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val tileSize = compileVec2d(obj["tileSize"].asArray() !!)
 			val (shape, supplement) = compileMatrixShape(obj)
 			matrix(tileSize, ::arrangeLrtb, shape, supplement)
 		}
 		"diagonal" -> {
-			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val tileSize = compileVec2d(obj["tileSize"].asArray() !!)
 			val (shape, supplement) = compileMatrixShape(obj)
 			matrix(tileSize, ::arrangeDiagonal, shape, supplement)
 		}
 		"random" -> {
-			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val tileSize = compileVec2d(obj["tileSize"].asArray() !!)
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
 			val (shape, supplement) = compileMatrixShape(obj)
 			matrix(tileSize, arrangeRandom(Random(seed)), shape, supplement)
 		}
 		"scattering" -> {
-			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val tileSize = compileVec2d(obj["tileSize"].asArray() !!)
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
 			val (shape, supplement) = compileMatrixShape(obj)
 			matrix(tileSize, arrangeScattering(Random(seed)), shape, supplement)
 		}
 		"image" -> {
-			val tileSize = compileSize(obj["tileSize"].asArray() !!)
+			val tileSize = compileVec2d(obj["tileSize"].asArray() !!)
 			val path = obj["path"].asString()
 			val (shape, supplement) = compileMatrixShape(obj)
 			matrix(tileSize, arrangeImage(path), shape, supplement)
@@ -97,6 +96,11 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val probability = obj["probability"].asDouble()
 			val seed = obj.getRandomSeedOrSetDefault(seeds)
 			sometimes(divider, probability, Random(seed))
+		}
+		"sortByDistance" -> {
+			val divider = compileDivider(obj["divider"].asObject(), seeds)
+			val origin = compileVec2d(obj["origin"])
+			sortByDistance(divider, origin)
 		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }

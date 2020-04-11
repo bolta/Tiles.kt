@@ -9,9 +9,13 @@ import processing.core.PConstants
 import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 
-abstract class MainWindow(protected val params: RenderingParameterSet, protected val outFileName: String) : PApplet() {
-	override fun settings() {
-		this.size(this.params.size.x.toInt(), this.params.size.y.toInt())
+class AtOnceMainWindow(params: RenderingParameterSet, outFileName: String) : MainWindow(params, outFileName) {
+	override fun setup() {
+		val start = System.currentTimeMillis()
+//		this.g.noStroke()
+		render(this.g, this.params)
+		println((System.currentTimeMillis() - start).toString() + " ms")
+		this.save(this.outFileName)
 	}
 }
 

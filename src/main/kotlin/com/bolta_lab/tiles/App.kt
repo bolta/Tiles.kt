@@ -31,7 +31,8 @@ fun main(args: Array<String>) {
 		it.write(resultSpec.toString())
 	}
 
-	val window = MainWindow(params, "$filenameBase.png")
+	val window = AtOnceMainWindow(params, "$filenameBase.png")
+//	val window = TileByTileMainWindow(params, "$filenameBase.png")
 	PApplet.runSketch((listOf(window.javaClass.canonicalName) + args).toTypedArray(), window)
 }
 

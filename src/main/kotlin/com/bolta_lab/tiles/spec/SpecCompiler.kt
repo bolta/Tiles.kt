@@ -1,9 +1,6 @@
 package com.bolta_lab.tiles.spec
 
-import com.bolta_lab.tiles.Figure
-import com.bolta_lab.tiles.Rect
-import com.bolta_lab.tiles.RenderingParameterSet
-import com.bolta_lab.tiles.Vec2d
+import com.bolta_lab.tiles.*
 import com.bolta_lab.tiles.color.*
 import com.bolta_lab.tiles.divider.*
 import org.hjson.JsonArray
@@ -34,10 +31,11 @@ fun compileSpec(script: Reader, defaultMasterSeed: Long, resultScript: Writer): 
 	val divider = compileDivider(spec["divider"].asObject() !!, seeds)
 	val colors = compileColors(spec["colors"].asObject() !!, seeds)
 	val border = compileBorder(spec["border"].asObject() !!, seeds)
+	val background = compileBackground(spec["background"], seeds)
 
 	spec.writeTo(resultScript, Stringify.HJSON)
 
-	return RenderingParameterSet(size, divider, colors, border)
+	return RenderingParameterSet(size, divider, colors, border, background)
 }
 
 private class SeedGenerator(masterSeed: Long) {
@@ -155,6 +153,22 @@ private fun compileBorder(obj: JsonObject, seeds: SeedGenerator): BorderSetter {
 	}
 }
 
+private fun compileBackground(obj: JsonValue?, seeds: SeedGenerator): Background {
+	if (obj === null) return Background(color = null)
+
+	if (obj.isArray) {
+		val color = compileColor(obj)
+		return Background(color)
+
+	} else throw SpecException("invalid background spec")
+}
+
+private fun compileColor(color: JsonValue) =
+		if (color.isArray) {
+			val rgb = color.asArray()
+			Rgb(rgb[0].asFloat(), rgb[1].asFloat(), rgb[2].asFloat())
+
+		} else throw SpecException("unknown color spec")
 
 /**
  * オブジェクトのプロパティとして記載された種を取得する。

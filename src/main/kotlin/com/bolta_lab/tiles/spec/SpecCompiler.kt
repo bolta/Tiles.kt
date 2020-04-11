@@ -51,6 +51,7 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 	val type = obj["type"].asString() !!
 
 	return when (type) {
+		// matrix dividers
 		"lrtb" -> {
 			val tileSize = compileSize(obj["tileSize"].asArray() !!)
 			val (shape, supplement) = compileMatrixShape(obj)
@@ -80,10 +81,12 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			matrix(tileSize, arrangeImage(path), shape, supplement)
 		}
 
+		// higher-order dividers
 		"endsToMiddle" -> {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)
 			endsToMiddle(divider)
 		}
+		// TODO reverse
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())

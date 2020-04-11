@@ -123,7 +123,7 @@ private fun compileColors(obj: JsonObject, seeds: SeedGenerator): Sequence<Color
 }
 
 private fun compileBorder(obj: JsonObject, seeds: SeedGenerator): BorderSetter {
-	val type = obj["type"].asString() !!
+	val type = obj["type"]?.asString() ?: "times"
 
 	return when (type) {
 		"none" -> none()

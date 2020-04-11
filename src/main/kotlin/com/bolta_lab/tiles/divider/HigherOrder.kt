@@ -2,6 +2,7 @@ package com.bolta_lab.tiles.divider
 
 import com.bolta_lab.tiles.Figure
 import com.bolta_lab.tiles.Vec2d
+import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 
 fun identity(divider: Divider) = divider
@@ -26,6 +27,10 @@ fun endsToMiddle(divider: Divider) = fun (figure: Figure): Sequence<Figure> {
 		// 奇数個の場合は 1 個だけ余っている
 		if (latterHalf.count() > formerHalf.count()) yield(latterHalf.last())
 	}
+}
+
+fun sometimes(divider: Divider, probability: Double, rand: Random) = fun (figure: Figure) = buildSequence {
+	divider(figure).forEach { if (rand.nextDouble() <= probability) yield(it) }
 }
 
 fun sortByDistance(divider: Divider, origin: Vec2d) = fun (figure: Figure) : Sequence<Figure> {

@@ -94,6 +94,12 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)
 			endsToMiddle(divider)
 		}
+		"sometimes" -> {
+			val divider = compileDivider(obj["divider"].asObject(), seeds)
+			val probability = obj["probability"].asDouble()
+			val seed = obj.getRandomSeedOrSetDefault(seeds)
+			sometimes(divider, probability, Random(seed))
+		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())

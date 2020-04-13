@@ -100,7 +100,8 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 		"sortByDistance" -> {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)
 			val origin = compileVec2d(obj["origin"])
-			sortByDistance(divider, origin)
+			val relative = obj["relative"]?.asBoolean() ?: false
+			sortByDistance(divider, origin, relative)
 		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }

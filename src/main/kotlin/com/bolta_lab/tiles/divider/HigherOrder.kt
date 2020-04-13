@@ -36,14 +36,23 @@ fun sometimes(divider: Divider, probability: Double, rand: Random) = fun (figure
 	}
 }
 
-fun sortByDistance(divider: Divider, origin: Vec2d) = fun (figure: Figure) : Sequence<Figure> {
+fun sortByDistance(divider: Divider, origin: Vec2d, relative: Boolean) = fun (figure: Figure) : Sequence<Figure> {
 	val origResult = divider(figure).toList()
 	fun distSquareFromOrigin(point: Vec2d) =
 			(point.x - origin.x) * (point.x - origin.x) + (point.y - origin.y) * (point.y - origin.y)
 			// Manhattan distance
 			// abs(point.x - origin.x) /* * (point.x - origin.x)*/ + abs(point.y - origin.y) /* * (point.y - origin.y)*/
 
+	val outer = figure.circumscribedRect
+
 	return origResult.sortedBy { figure ->
-		 distSquareFromOrigin(figure.circumscribedRect.center)
+		val figurePosition = figure.circumscribedRect.center.let { center ->
+			if (relative) {
+				Vec2d(center.x - outer.left, center.y - outer.top)
+			} else {
+				center
+			}
+		}
+		distSquareFromOrigin(figurePosition)
 	 }.asSequence()
 }

@@ -5,6 +5,7 @@ import com.bolta_lab.tiles.Vec2d
 import java.util.*
 import kotlin.coroutines.experimental.buildSequence
 import kotlin.math.abs
+import kotlin.math.atan2
 
 fun identity(divider: Divider) = divider
 
@@ -55,4 +56,21 @@ fun sortByDistance(divider: Divider, origin: Vec2d, relative: Boolean) = fun (fi
 		}
 		distSquareFromOrigin(figurePosition)
 	 }.asSequence()
+}
+
+// TODO sortByDistance とほとんど同じなので統一する
+fun sortByArgument(divider: Divider, origin: Vec2d, relative: Boolean) = fun (figure: Figure) : Sequence<Figure> {
+	val origResult = divider(figure).toList()
+	val outer = figure.circumscribedRect
+
+	return origResult.sortedBy { figure ->
+		val figurePosition = figure.circumscribedRect.center.let { center ->
+			if (relative) {
+				Vec2d(center.x - outer.left, center.y - outer.top)
+			} else {
+				center
+			}
+		}
+		atan2(figurePosition.y - origin.y, figurePosition.x - origin.x)
+	}.asSequence()
 }

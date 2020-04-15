@@ -4,6 +4,12 @@ import processing.core.PConstants
 import processing.core.PGraphics
 
 data class Vec2d(val x: Double, val y: Double)
+operator fun Vec2d.plus(that: Vec2d) = Vec2d(this.x + that.x, this.y + that.y)
+operator fun Vec2d.minus(that: Vec2d) = Vec2d(this.x - that.x, this.y - that.y)
+operator fun Vec2d.times(that: Double) = Vec2d(this.x * that, this.y * that)
+//operator fun Double.times(that: Vec2d) = that * this
+// TODO 他にも必要なものを追加
+
 
 abstract class Figure {
 	/**

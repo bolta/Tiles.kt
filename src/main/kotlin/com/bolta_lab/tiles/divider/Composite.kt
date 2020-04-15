@@ -11,7 +11,7 @@ fun composite(vararg dividers: Divider): Divider = fun(figure: Figure): Sequence
 		result = result.flatMap { parent ->
 			divider(parent).map {
 //				it
-				clipExper(it, parent)
+				clip(it, parent)
 			}.filter {
 				// TODO null だけでなく頂点なしもはじくべきでは？
 				it !== null
@@ -33,44 +33,4 @@ fun composite(vararg dividers: Divider): Divider = fun(figure: Figure): Sequence
 //	}
 //
 	return result
-}
-
-private fun clipExper(figure: Figure, clip: Figure): Figure? {
-	fun v2p(v: Vec2d) = Point(v.x.toDouble(), v.y.toDouble())
-	fun toEsriPolygon(vertices: List<Vec2d>): Polygon {
-		val poly = Polygon()
-		// TODO figure の点の数チェックが必要
-		poly.startPath(v2p(vertices[0]))
-		vertices.drop(1).forEach { v -> poly.lineTo(v2p(v)) }
-		return poly
-	}
-	val figureEsri = toEsriPolygon(figure.vertices)
-	val clipEsri = toEsriPolygon(clip.vertices)
-
-	val clipped = OperatorIntersection.local().execute(figureEsri, clipEsri,
-			SpatialReference.create(4326), // これはなんだ？？
-			null)
-
-	if (clipped.type.value() != Geometry.GeometryType.Polygon) return null
-
-	val coords = (clipped as Polygon).coordinates2D
-	if (coords.isEmpty()) return null
-
-	return com.bolta_lab.tiles.Polygon(coords.map { Vec2d(it.x, it.y) })
-}
-
-private fun enumVertices(geom: Geometry): Sequence<Vec2d> = buildSequence {
-	val cur = SimpleGeometryCursor(geom)
-	while (true) {
-		val g = cur.next()
-		println(g.javaClass)
-		if (g === null) break
-		val pt = g as? Point
-		if (pt !== null) {
-			yield(Vec2d(pt.x, pt.y))
-		} else {
-			println("recurring...")
-			yieldAll(enumVertices(g))
-		}
-	}
 }

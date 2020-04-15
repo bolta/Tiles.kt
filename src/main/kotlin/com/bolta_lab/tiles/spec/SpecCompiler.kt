@@ -109,6 +109,10 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val relative = obj["relative"]?.asBoolean() ?: false
 			sortByArgument(divider, origin, relative)
 		}
+		"radial" -> {
+			val count = obj["count"].asInt()
+			radial(count)
+		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())

@@ -9,6 +9,7 @@ import org.hjson.Stringify
 import java.io.Reader
 import java.io.Writer
 import java.util.*
+import kotlin.math.PI
 
 /**
  * 仕様を記述した Hjson 文書を描画可能な値の組に変換する。
@@ -78,7 +79,22 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			matrix(tileSize, arrangeImage(path), shape, supplement)
 		}
 
-		// higher-order dividers
+		// non-rect dividers
+		"radial" -> {
+			val count = obj["count"].asInt()
+			radial(count)
+		}
+
+		// transformation (geometric higher-order) dividers
+
+		"rotate" -> {
+			val divider = compileDivider(obj["divider"].asObject(), seeds)
+			val angle = degreeToRadian(obj["angle"].asDouble())
+			val center = compileVec2d(obj["center"].asArray() !!)
+			rotate(divider, angle, center)
+		}
+
+		// other higher-order dividers
 		"identity" -> {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)
 			identity(divider) // 呼ばなくてもいいのだが…
@@ -109,10 +125,6 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 			val relative = obj["relative"]?.asBoolean() ?: false
 			sortByArgument(divider, origin, relative)
 		}
-		"radial" -> {
-			val count = obj["count"].asInt()
-			radial(count)
-		}
 		"composite" -> {
 			val dividers = obj["dividers"].asArray().map { compileDivider(it.asObject(), seeds) }
 			composite(* dividers.toTypedArray())
@@ -121,6 +133,8 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 		else -> throw SpecException("Unknown divider type: $type")
 	}
 }
+
+private fun degreeToRadian(degree: Double) = degree * 2 * PI / 360
 
 private fun compileMatrixShape(divider: JsonObject) = (divider["shape"]?.asString() ?: "grid").let { type ->
 	fun shapeAndSupplement(generateFigures: (Rect, Vec2d, Index2d) -> Figure,

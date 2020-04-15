@@ -2,13 +2,24 @@ package com.bolta_lab.tiles
 
 import processing.core.PConstants
 import processing.core.PGraphics
+import kotlin.math.cos
+import kotlin.math.sin
 
-data class Vec2d(val x: Double, val y: Double)
-operator fun Vec2d.plus(that: Vec2d) = Vec2d(this.x + that.x, this.y + that.y)
-operator fun Vec2d.minus(that: Vec2d) = Vec2d(this.x - that.x, this.y - that.y)
-operator fun Vec2d.times(that: Double) = Vec2d(this.x * that, this.y * that)
+data class Vec2d(val x: Double, val y: Double) {
+	operator fun plus(that: Vec2d) = Vec2d(this.x + that.x, this.y + that.y)
+	operator fun minus(that: Vec2d) = Vec2d(this.x - that.x, this.y - that.y)
+	operator fun times(that: Double) = Vec2d(this.x * that, this.y * that)
 //operator fun Double.times(that: Vec2d) = that * this
+
+	fun rotate(angle: Double, center: Vec2d = Vec2d(0.0, 0.0)) = (this - center).let { (x, y) ->
+		val s = sin(angle)
+		val c = cos(angle)
+		Vec2d(x * c - y * s, x * s + y * c)
+	} + center
+
 // TODO 他にも必要なものを追加
+
+}
 
 
 abstract class Figure {
@@ -24,6 +35,8 @@ abstract class Figure {
 	abstract val circumscribedRect: Rect
 
 	abstract val vertices: List<Vec2d>
+
+	abstract fun rotate(angle: Double, center: Vec2d = Vec2d(0.0, 0.0)): Figure
 }
 
 data class Rect(val leftTop: Vec2d, val size: Vec2d): Figure() {
@@ -49,6 +62,10 @@ data class Rect(val leftTop: Vec2d, val size: Vec2d): Figure() {
 			Vec2d(this.left, this.bottom))
 
 	val center get() = Vec2d(this.left + this.width / 2, this.top + this.height / 2)
+
+	fun toPolygon() = Polygon(this.vertices)
+
+	override fun rotate(angle: Double, center: Vec2d) = this.toPolygon().rotate(angle, center)
 }
 
 data class Polygon(override val vertices: List<Vec2d>): Figure() {
@@ -79,4 +96,6 @@ data class Polygon(override val vertices: List<Vec2d>): Figure() {
 
 		Rect(Vec2d(left, top), Vec2d(right - left, bottom - top))
 	}
+
+	override fun rotate(angle: Double, center: Vec2d) = Polygon(this.vertices.map { it.rotate(angle, center) })
 }

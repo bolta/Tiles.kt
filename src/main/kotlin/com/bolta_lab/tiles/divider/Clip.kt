@@ -27,3 +27,8 @@ fun clip(figure: Figure, clip: Figure): Figure? {
 
 	return com.bolta_lab.tiles.Polygon(coords.map { Vec2d(it.x, it.y) })
 }
+
+fun clip(figures: Sequence<Figure>, clip: Figure): Sequence<Figure> =
+		figures.map { clip(it, clip) }
+				.filter { it !== null }
+				.map { it !! }

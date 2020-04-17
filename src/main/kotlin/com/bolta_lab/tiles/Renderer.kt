@@ -30,7 +30,6 @@ fun renderAsSequence(grp: PGraphics, params: RenderingParameterSet) : Sequence<(
 		if (/*figure !== null &&*/ figure.vertices.count() > 0) { // TODO 本当は zip する前に飛ばす
 			yield() {
 				color.toP5Color().let { (r, g, b) -> grp.fill(r, g, b) }
-//			grp.noFill()
 				setBorder(grp, params.border, color)
 				figure.paint(grp)
 			}
@@ -45,7 +44,6 @@ private fun renderBackground(grp: PGraphics, background: Background) {
 }
 
 private fun setBorder(grp: PGraphics, setter: BorderSetter, fillColor: Color) {
-//	if (border.bor)
 	val settings = setter(fillColor)
 	if (! settings.borderExists) {
 		grp.noStroke()

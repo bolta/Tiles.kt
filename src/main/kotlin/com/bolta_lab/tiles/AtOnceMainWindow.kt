@@ -16,7 +16,6 @@ class AtOnceMainWindow(params: RenderingParameterSet, outFileName: String) : Mai
 //		this.scale(0.5f)
 
 		val start = System.currentTimeMillis()
-//		this.g.noStroke()
 		render(this.g, this.params)
 		println((System.currentTimeMillis() - start).toString() + " ms")
 		this.save(this.outFileName)

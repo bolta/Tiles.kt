@@ -90,8 +90,8 @@ private fun compileDivider(obj: JsonObject, seeds: SeedGenerator): Divider {
 		"rotate" -> {
 			val divider = compileDivider(obj["divider"].asObject(), seeds)
 			val angle = degreeToRadian(obj["angle"].asDouble())
-			val center = compileVec2d(obj["center"].asArray() !!)
-			rotate(divider, angle, center)
+//			val center = compileVec2d(obj["center"].asArray() !!)
+			rotate(divider, angle/*, center*/)
 		}
 
 		// other higher-order dividers

@@ -6,7 +6,10 @@ import com.bolta_lab.tiles.Vec2d
 import java.lang.Double.max
 import java.lang.Double.min
 
-fun rotate(divider: Divider, angle: Double, center: Vec2d = Vec2d(0.0, 0.0)) = fun (figure: Figure): Sequence<Figure> {
+fun rotate(divider: Divider, angle: Double/*, center: Vec2d = Vec2d(0.0, 0.0)*/) = fun (figure: Figure): Sequence<Figure> {
+	// TODO center を指定できるようにする
+	val center = figure.circumscribedRect.center
+
 	val expandedOuterRect = figure.rotate(-angle, center).circumscribedRect
 	val originalOuterRect = figure.circumscribedRect
 
